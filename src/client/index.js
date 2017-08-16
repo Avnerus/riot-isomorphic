@@ -1,6 +1,11 @@
 'use strict';
 
 import riot from 'riot';
+import '../app/components/main.tag'
+
+
+console.log("Client loading!");
+/*
 import socketUtil from '../app/util/socket';
 
 import main from '../app/components/main';
@@ -58,5 +63,5 @@ renderTest();
 window.onload = function() {
     console.log("Page loaded!");
     renderTest();
-}
+}*/
 

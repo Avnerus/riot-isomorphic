@@ -35,6 +35,8 @@ public
 # JSPM packages
 jspm_packages
 
+.reify-cache
+
 #VIM
 *.swp
 *.swo

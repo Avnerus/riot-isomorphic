@@ -4,27 +4,23 @@ var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
 var rimraf = require('rimraf');
 var runSequence = require('run-sequence');
-var gls = require('gulp-live-server');
 var replace = require('gulp-replace');
 var concat = require('gulp-concat');
 var autoprefixer = require ('gulp-autoprefixer');
-var browserify = require('browserify');
-var babelify = require("babelify");
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var file = require('gulp-file');
-
+var rollup = require('rollup-stream');
+var nodeResolve = require('rollup-plugin-node-resolve');
+var commonjs = require('rollup-plugin-commonjs');
+var buble = require( 'rollup-plugin-buble');
+var riot = require('rollup-plugin-riot');
+var inject = require('rollup-plugin-inject');
+var nodent = require('rollup-plugin-nodent');
+var nodemon = require('gulp-nodemon');
 
 var server;
 var watchEvent;
-
-// DEVELOPMENT TASKS
-//================================================
-
-/*
-* 1. Setup a webserver with livereload using BrowserSync
-* 2. JS and CSS get processed and served from the 'build' folder
-* */
 
 // ENV
 gulp.task('env', function() {
@@ -34,11 +30,11 @@ gulp.task('env', function() {
 
 gulp.task('css', function() {
     // Extract the CSS from the JS Files and place into a single style with autoprefixer
-    return gulp.src('src/app/components/**/*.js')
+    return gulp.src('src/app/components/**/*.tag')
     .pipe(replace(/(^[\s\S]*<style>|<\/style>[\s\S]*$)/gm, ''))
     .pipe(concat('style.css'))
     .pipe(autoprefixer({browsers: ['last 2 versions']}))
-    .pipe(gulp.dest('build/app'));
+    .pipe(gulp.dest('public/css'));
 });
 
 
@@ -57,31 +53,6 @@ gulp.task('public-lib', function() {
     .pipe(gulp.dest('public/lib'));
 });
 
-// JS
-gulp.task('browserify', ['js-client', 'js-server', 'js-app'], function() {
-    // Browserify
-    var b = browserify({
-        entries: './build/client/index.js',
-        debug: true,
-        transform: [babelify.configure({optional: ['runtime', 'es7.asyncFunctions']})],
-        fullPaths: true
-    });
-    return b.bundle()
-        .pipe(source('bundle.js'))
-        .pipe(buffer())
-        .pipe(gulp.dest('build/client'));
-
-});
-
-gulp.task('js-server', function() {
-    return gulp.src('src/server/**/*.js')
-      .pipe(gulp.dest('build/server'));
-});
-
-gulp.task('js-client', function() {
-    return gulp.src('src/client/**/*.js')
-      .pipe(gulp.dest('build/client'));
-});
 
 gulp.task('js-app', function() {
     return gulp.src('src/app/**/*.js')
@@ -90,6 +61,25 @@ gulp.task('js-app', function() {
       .pipe(gulp.dest('build/app'));
 })
 
+gulp.task('rollup', function() {
+  return rollup({
+    entry: 'src/client/index.js',
+    format: 'umd',
+    plugins: [
+      riot(),
+      buble(),
+      nodent(),
+      commonjs(),
+      nodeResolve({
+        jsnext: true,
+        main: true
+      })
+    ]
+  })
+  .pipe(source('bundle.js'))
+  .pipe(gulp.dest('./public'));
+});
+
 // HTML
 gulp.task('html', function() {
   gulp.src(['./index.html'])
@@ -97,16 +87,21 @@ gulp.task('html', function() {
 });
 
 // serve task
-gulp.task('serve', ['html', 'public', 'env'] , function(cb) {
-  server = gls.new('app.js');
-  server.start();
+gulp.task('serve', ['env','rollup', 'css'] , function(cb) {
 
+   return nodemon({
+        exec: './node_modules/.bin/babel-node --presets es2015-riot,stage-2',
+        //exec: 'node --presets es2015-riot,stage-2',
+        script: './src/server/index.js',
+        watch: './src/server/'
+   });
 
-  gulp.watch(['./src/**/*.js'], function(event) {
+  //gulp.watch(['./src/**/*.js'], function(event) {
+  /*
       watchEvent = event;
       gulp.start('reload-server');
   });
-  gulp.watch('app.js', server.start);
+  gulp.watch('app.js', server.start);*/
 });
 
 gulp.task('reload-server', ['public'], function() {
@@ -122,18 +117,6 @@ gulp.task('delete-build', function() {
   });
 });
 
-
-// Task for generating the primus client
-gulp.task('primus', function() {
-    var Primus = require('primus');
-    var Emitter = require('primus-emitter');
-    var primus = Primus.createServer(function connection(spark) {
-
-    }, { port: 3000, transformer: 'websockets'  });    
-    primus.use('emitter', Emitter);
-    var str = primus.library();
-    return file('primus.js', str, { src: true  }).pipe(gulp.dest('lib'));
-})
 
 // Default
 gulp.task('default', ['serve']);

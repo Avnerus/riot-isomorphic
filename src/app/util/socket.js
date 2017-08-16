@@ -1,8 +1,9 @@
 // Socket Util
 // Users primus.js
 
+/*
 import PrimusNode from 'primus';
-import PrimusEmitter from 'primus-emitter';
+import PrimusEmitter from 'primus-emitter'; */
 
 class SocketUtil {
     constructor() {
@@ -11,6 +12,7 @@ class SocketUtil {
     initWithUrl(url) {
         this.url = url;
         this.client = null;
+        /*
 
         if (typeof window != 'undefined') {
             // Client init
@@ -33,9 +35,9 @@ class SocketUtil {
         });
         this.client.on('error', (error) => {
             console.log('Error connecting to socket', error);
-        });
+        }); */
     }
-
+/*
     reconnect() {
         console.log("Socket Util - Reconnecting socket");
         this.initWithUrl(this.url);
@@ -52,7 +54,7 @@ class SocketUtil {
                 }
             });
         });
-    }
+    }*/
 };
 
 // Singleton
