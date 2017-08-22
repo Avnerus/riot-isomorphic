@@ -1,6 +1,3 @@
-// Fetch Util
-import fetch from 'isomorphic-fetch';
-
 class MiscUtil {
     constructor() {
     }

@@ -8,9 +8,10 @@ export default class State {
     constructor() {
         observable(this);
 
-        this.fruit = new FruitStore();
+        this.fruit = new FruitStore(this);
         this.auth = new AuthStore();
         this.main = new MainStore();
+
         console.log("State Initialized");
     }
 };

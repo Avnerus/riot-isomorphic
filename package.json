@@ -43,15 +43,24 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
+    "body-parser": "^1.17.2",
+    "compression": "^1.7.0",
+    "cors": "^2.8.4",
     "ejs": "^2.5.7",
     "express": "^4.12.3",
     "express-session": "^1.11.1",
     "feathers": "^2.1.7",
-    "isomorphic-fetch": "^2.0.1",
+    "feathers-errors": "^2.9.1",
+    "feathers-nedb": "^2.7.0",
+    "feathers-rest": "^1.8.0",
+    "nedb": "^1.8.0",
+    "nodent-runtime": "^3.0.4",
+    "page": "^1.7.1",
+    "page.js-express-mapper.js": "^1.0.5",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
-    "riot": "^3.6.1",
     "reify": "^0.4.4",
+    "riot": "^3.6.1",
     "riot-route": "^3.1.2"
   }
 }

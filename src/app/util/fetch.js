@@ -1,9 +1,6 @@
 // Fetch Util
-import fetch_ from 'isomorphic-fetch';
-
 class FetchUtil {
     constructor() {
-        this.fetch = fetch_.bind(undefined); // this solves an invocation error problem in chrome, according to https://github.com/matthew-andrews/isomorphic-fetch/pull/20
     }
 
     postJSON(target, data) {
@@ -18,14 +15,16 @@ class FetchUtil {
         });
     }
 
-    getJSON(target) {
-        return this.fetch(target, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+    get(target) {
+        return fetch(target, {
+             method: 'GET',
+             credentials: 'include',
+             headers: {
+                 'Accept': 'application/json'
+             }
+        }).then((response) => {
+             return response.json();
+        })
     }
 
 };

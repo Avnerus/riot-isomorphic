@@ -1,14 +1,11 @@
 // Application routes - shared by client and server
 import riot from 'riot';
 import miscUtil from './util/misc'
+import FruitStore from './stores/fruit' 
 
 class Routes {
     constructor() {
-        console.log("Routes class constructed!");
-        // Load Page.js on the client side
-        if (miscUtil.isBrowser()) {
-            this.page = require('page');
-        } 
+        this.populateQueue = [];
     }
     go(next, req) {
         req.handledRoute = true;
@@ -16,7 +13,7 @@ class Routes {
             next();
         }
     }
-    runRoutingTable(app) {
+    runRoutingTable(app,state) {
         app.route('/').get((req, res, next) => {
             console.log("Default route!")
             /*
@@ -36,16 +33,13 @@ class Routes {
             this.go(next, req);*/
         });
 
-        app.route('/banana').get((req, res, next) => {
-            console.log("Banana route!");
-            /*
-            this.waitBeforeRendering(req, ["fruit_data_updated"]);
-
-            console.log("Triggering banana fruit_swap")
-            let dispatcher = this.getDispatcher(req);
-            dispatcher.trigger("fruit_swap", "banana");
-
-            this.go(next, req);*/
+        app.route('/banana').get( (req, res, next) => {
+            console.log("Banana route!", state.fruit);
+            this.populateQueue.push(
+                state.fruit.setFruit("banana")
+            );
+            //state.fruit.trigger('set_fruit', "banana");
+            this.go(next, req);
         });
 /*
         app.route('/login').get((req, res, next) => {

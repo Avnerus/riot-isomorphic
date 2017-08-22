@@ -1,24 +1,16 @@
 'use strict';
 
-import riot from 'riot';
+import { mount,mixin } from 'riot';
 import '../app/components/main.tag'
-
+import page from 'page';
+import Routes from '../app/routes';
+import pageExpressMapper from 'page.js-express-mapper.js';
+import State from '../app/state'
+import 'nodent-runtime'
 
 console.log("Client loading!");
-/*
-import socketUtil from '../app/util/socket';
-
-import main from '../app/components/main';
-import pageExpressMapper from 'page.js-express-mapper.js';
-import page from 'page';
-import routes from '../app/routes';
-
-import _ from 'underscore'
-
 
 window.page = page;
-
-let loadContext = {};
 
 // activate express-mapper plugin
 pageExpressMapper({
@@ -26,11 +18,35 @@ pageExpressMapper({
     expressAppName: 'app'
 });
 
-socketUtil.initWithUrl('http://localhost:3000');
+let state = new State();
+let initialData = JSON.parse(window.initialData);
 
-routes.runRoutingTable(window.app, loadContext);
+Object.keys(state).forEach((key) => {
+    if (initialData[key]) {
+        Object.assign(state[key], initialData[key]);
+    }
+});
+
+console.log("Initial state", state);
+mixin({state: state}); // Global state mixin
+mount('main',state);
+
+Routes.runRoutingTable(window.app, state);
 
 page();
+
+
+/*
+import socketUtil from '../app/util/socket';
+
+import main from '../app/components/main';
+
+import _ from 'underscore'
+
+
+
+socketUtil.initWithUrl('http://localhost:3000');
+
 
 let rendered = false;
 let waitBeforeRendering = [];

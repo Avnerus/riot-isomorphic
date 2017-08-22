@@ -67,8 +67,8 @@ gulp.task('rollup', function() {
     format: 'umd',
     plugins: [
       riot(),
+      nodent({runtime: true}),
       buble(),
-      nodent(),
       commonjs(),
       nodeResolve({
         jsnext: true,

@@ -1,78 +1,55 @@
 import feathers from 'feathers';
+import rest from 'feathers-rest';
 import Routes from '../app/routes';
 import State from '../app/state';
 
 import { render,mixin } from 'riot';
 import '../app/components/main.tag'
 
-const app = feathers();
-
-app.use(feathers.static(process.env.APP_BASE_PATH + "/public"));
-
-app.set('views', process.env.APP_BASE_PATH + "/src/server/views")
-app.set('view engine', 'ejs')
-
-/*
-import feathersPassport from 'feathers-passport';
-import hooks from 'feathers-hooks';
-
+//import feathersPassport from 'feathers-passport';
+//import hooks from 'feathers-hooks';
 import bodyParser from 'body-parser';
 import session from 'express-session';
-
+import compress from 'compression'
+import cors from 'cors'
 import FS from 'fs';
-import _ from 'underscore'
+
+import fruitService from './services/fruit'
 
 
-import main from '../app/components/main';
-import routes from '../app/routes';
+const app = feathers()
+.set('views', process.env.APP_BASE_PATH + "/src/server/views")
+.set('view engine', 'ejs')
+.use(compress())
+.options('*', cors())
+.use(cors())
+.use(feathers.static(process.env.APP_BASE_PATH + "/public"))
+.use(bodyParser.json())
+.use(bodyParser.urlencoded({ extended: true  }))
+.configure(rest())
 
-import services from './services';
+// Services
+.use('/fruit', fruitService);
 
-import socketUtil from '../app/util/socket';
+//.use('/taste', services.taste)
 
-
-// Riot app template engine
-app.engine('html', function (filePath, options, callback) { 
-    async function render() {
-        try {
-            let view = riot.render(options.mainTag, options.tagOpts);
-            let regex = new RegExp('<' + options.mainTag + '.*<\/' + options.mainTag + '>');
-            // Loading HTML file
-            let content = await Q.denodeify(FS.readFile)(filePath);
-            let rendered = content.toString().replace(regex, view);
-            return callback(null, rendered);
-        }
-        catch (e) {
-            console.log("App engine error: ", e, " Filepath: ", filePath, " Callback: ", callback);
-            console.log(e.stack);
-            return;
-        }
-    }
-
-    render();
-})
-
-// Server routes
-app.configure(
-    feathers.rest()
-)
+//.use('/users', services.users); 
+//
+/*
 .configure(feathers.primus({
     transformer: 'websockets'
 
 }, function(primus) {
-}))
-.configure(hooks())
-.use(bodyParser.json())
+})*/
+//.configure(hooks())
+/*
 .configure(feathersPassport({
     secret: 'eat-your-fruits',
     // In production use RedisStore
     store: new session.MemoryStore(),
     resave: true,
     saveUninitialized: true
-}))
-.use('/fruit', services.fruit)
-.use('/taste', services.taste)
-.use('/users', services.users); */
+}))*/
 
 // Client routes
 Routes.runRoutingTable(app);
@@ -93,6 +70,20 @@ app.use(function (req, res, next) {
       body: render('main', state)
     })
 });
+
+
+// Fixtures
+const fruits = app.service('/fruit');
+
+Promise.all([
+    fruits.create({ name: 'apple',
+                types: ["Pink Lady", "Gala", "Fuji","Granny Smith"]
+    }),
+    fruits.create({ name: 'banana',
+                types: ["Cavendish", "Lady Finger", "Pisang Raja", "Williams"]
+    })
+])
+.catch(err => console.log('Error occurred while creating fruit:', err));
 
 console.log("Starting server");
 
