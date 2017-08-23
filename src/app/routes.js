@@ -1,7 +1,5 @@
 // Application routes - shared by client and server
-import riot from 'riot';
 import miscUtil from './util/misc'
-import FruitStore from './stores/fruit' 
 
 class Routes {
     constructor() {
@@ -13,41 +11,35 @@ class Routes {
             next();
         }
     }
+
     runRoutingTable(app,state) {
         app.route('/').get((req, res, next) => {
             console.log("Default route!")
-            /*
-            let dispatcher = this.getDispatcher(req);
-            dispatcher.trigger("fruit_swap", null); */
-
+            req.state.main.mall();
             this.go(next, req);
         });
 
         app.route('/apple').get((req, res, next) => {
-            /*
-            this.waitBeforeRendering(req, ["fruit_data_updated"]);
-
-            let dispatcher = this.getDispatcher(req);
-            dispatcher.trigger("fruit_swap", "apple");
-
-            this.go(next, req);*/
+            console.log("Apple route!", req.state.fruit);
+            req.populateQueue.push(
+                req.state.fruit.setFruit("apple")
+            );
+            this.go(next, req);
         });
 
         app.route('/banana').get( (req, res, next) => {
-            console.log("Banana route!", state.fruit);
-            this.populateQueue.push(
-                state.fruit.setFruit("banana")
+            console.log("Banana route!", req.state.fruit);
+            req.populateQueue.push(
+                req.state.fruit.setFruit("banana")
             );
-            //state.fruit.trigger('set_fruit', "banana");
             this.go(next, req);
         });
-/*
-        app.route('/login').get((req, res, next) => {
-            let dispatcher = this.getDispatcher(req);
-            dispatcher.trigger("login_pressed");
 
+        app.route('/login').get((req, res, next) => {
+            req.state.main.login();
             this.go(next, req);
         });
+        /*
 
         app.route('*').get((req, res, next) => {
             if (!req.handledRoute) {

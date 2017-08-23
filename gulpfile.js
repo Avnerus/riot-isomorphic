@@ -22,6 +22,8 @@ var nodemon = require('gulp-nodemon');
 var server;
 var watchEvent;
 
+var rollupCache;
+
 // ENV
 gulp.task('env', function() {
   process.env.APP_BASE_PATH = __dirname;
@@ -62,8 +64,10 @@ gulp.task('js-app', function() {
 })
 
 gulp.task('rollup', function() {
-  return rollup({
+
+ var stream = rollup({
     entry: 'src/client/index.js',
+    cache: rollupCache,
     format: 'umd',
     plugins: [
       riot(),
@@ -76,8 +80,22 @@ gulp.task('rollup', function() {
       })
     ]
   })
+  .on('error', function(error) {
+      console.error("Rollup error", error);
+      stream.end();
+  })
+  .on('bundle', function(bundle) {
+      rollupCache = bundle;
+  })
   .pipe(source('bundle.js'))
   .pipe(gulp.dest('./public'));
+
+  return stream;
+});
+
+gulp.task('rollup-watch',['rollup'], function() {
+      gulp.watch(['./src/app/**/*.*','./src/client/**/*.js'], ['rollup']);
+
 });
 
 // HTML
@@ -87,7 +105,7 @@ gulp.task('html', function() {
 });
 
 // serve task
-gulp.task('serve', ['env','rollup', 'css'] , function(cb) {
+gulp.task('serve', ['env','rollup-watch', 'css'] , function(cb) {
 
    return nodemon({
         exec: './node_modules/.bin/babel-node --presets es2015-riot,stage-2',

@@ -4,7 +4,7 @@ class FetchUtil {
     }
 
     postJSON(target, data) {
-        return this.fetch(target, {
+        return fetch(target, {
             method: 'POST',
             credentials: 'include',
             body: JSON.stringify(data),
@@ -12,7 +12,10 @@ class FetchUtil {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
             }
-        });
+        })
+        .then((response) => {
+             return response.json();
+        })
     }
 
     get(target) {
@@ -22,7 +25,8 @@ class FetchUtil {
              headers: {
                  'Accept': 'application/json'
              }
-        }).then((response) => {
+        })
+        .then((response) => {
              return response.json();
         })
     }

@@ -31,7 +31,14 @@ console.log("Initial state", state);
 mixin({state: state}); // Global state mixin
 mount('main',state);
 
-Routes.runRoutingTable(window.app, state);
+page('*', function(ctx,next) {
+    console.log("Set state in page context");
+    ctx.state = state;
+    ctx.populateQueue = [];
+    next();
+});
+
+Routes.runRoutingTable(window.app);
 
 page();
 

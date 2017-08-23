@@ -1,6 +1,6 @@
 import FruitStore from './stores/fruit';
-import AuthStore from './stores/auth';
 import MainStore from './stores/main';
+import AuthStore from './stores/auth';
 
 import {observable} from 'riot'
 
@@ -8,9 +8,9 @@ export default class State {
     constructor() {
         observable(this);
 
-        this.fruit = new FruitStore(this);
-        this.auth = new AuthStore();
+        this.fruit = new FruitStore();
         this.main = new MainStore();
+        this.auth = new AuthStore();
 
         console.log("State Initialized");
     }

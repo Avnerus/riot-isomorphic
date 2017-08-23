@@ -1,7 +1,6 @@
 import feathers from 'feathers';
 import rest from 'feathers-rest';
 import Routes from '../app/routes';
-import State from '../app/state';
 
 import { render,mixin } from 'riot';
 import '../app/components/main.tag'
@@ -15,75 +14,108 @@ import cors from 'cors'
 import FS from 'fs';
 
 import fruitService from './services/fruit'
+import userService from './services/users'
 
+import TasteService from './services/taste'
+
+import State from '../app/state';
+
+import hooks from 'feathers-hooks'
+import authentication from 'feathers-authentication'
+import local from 'feathers-authentication-local'
+import errorHandler from 'feathers-errors/handler';
+import AuthSettings from './auth-settings'
+
+global.fetch = require('node-fetch');
 
 const app = feathers()
 .set('views', process.env.APP_BASE_PATH + "/src/server/views")
 .set('view engine', 'ejs')
+.configure(rest())
+.configure(hooks())
 .use(compress())
 .options('*', cors())
 .use(cors())
 .use(feathers.static(process.env.APP_BASE_PATH + "/public"))
 .use(bodyParser.json())
 .use(bodyParser.urlencoded({ extended: true  }))
-.configure(rest())
 
-// Services
-.use('/fruit', fruitService);
-
-//.use('/taste', services.taste)
-
-//.use('/users', services.users); 
 //
-/*
-.configure(feathers.primus({
-    transformer: 'websockets'
+// Services
+.use('/fruit', fruitService)
+.use('/taste', new TasteService())
+.use('/users', userService); 
 
-}, function(primus) {
-})*/
-//.configure(hooks())
-/*
-.configure(feathersPassport({
-    secret: 'eat-your-fruits',
-    // In production use RedisStore
-    store: new session.MemoryStore(),
-    resave: true,
-    saveUninitialized: true
-}))*/
+//Setup authentication
+app.configure(authentication(AuthSettings));
+app.configure(local());
 
-// Client routes
-Routes.runRoutingTable(app);
-/*
-// Authentication setup
-let userService = app.service('users');
 
-services.users.insertHooks(userService);
-services.users.createTestUser(userService);
-services.users.setupPassport(userService, app); */
-
-app.use(function (req, res, next) {
-    console.log("Render riot");
-    let state = new State();
-    mixin({state: state}); // Global state mixin
-    res.render('index', {
-      initialData: JSON.stringify(state),
-      body: render('main', state)
-    })
+// Setup a hook to only allow valid JWTs or successful 
+// local auth to authenticate and get new JWT access tokens
+app.service('authentication').hooks({
+  before: {
+    create: [
+      authentication.hooks.authenticate(['local', 'jwt'])
+    ]
+  }
 });
 
 
+// Hash the user's passwrd
+app.service('users').hooks({
+  before: {
+    create: [
+      local.hooks.hashPassword()
+    ]
+  }
+});
+
 // Fixtures
 const fruits = app.service('/fruit');
+const users = app.service('/users');
 
 Promise.all([
     fruits.create({ name: 'apple',
                 types: ["Pink Lady", "Gala", "Fuji","Granny Smith"]
     }),
     fruits.create({ name: 'banana',
-                types: ["Cavendish", "Lady Finger", "Pisang Raja", "Williams"]
+                types: ["cavendish", "lady finger", "pisang raja", "williams"]
+    }),
+    users.create({ email: 'test@fruits.com',
+                   password: '1234'
     })
 ])
 .catch(err => console.log('Error occurred while creating fruit:', err));
+
+// Client routes
+app.use(function (req, res, next) {
+    console.log("Init state");
+    req.state = new State();
+    req.populateQueue = [];
+    next();
+});
+
+Routes.runRoutingTable(app);
+
+app.use(function (req, res, next) {
+    if (!req.handledRoute) {
+        res.status(404).send('Nothing to see here!');
+    } else {
+        Promise.all(req.populateQueue)
+        .then(() => {
+            console.log("Render riot");
+            mixin({state: req.state}); // Global state mixin
+            res.render('index', {
+              initialData: JSON.stringify(req.state),
+              body: render('main', req.state)
+            })
+        })
+    }
+});
+
+app.use(errorHandler());
+
 
 console.log("Starting server");
 
