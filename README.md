@@ -10,11 +10,10 @@ An attempt for an isomorphic appliction using RiotJS 3. Includes:
 
 Install
 ```
-npm install -g gulp
 npm install
 ```
 Run:
 ```
-gulp
+npm start
 ```
 Then browse to http://localhost:3000
