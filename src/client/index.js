@@ -7,8 +7,11 @@ import Routes from '../app/routes';
 import pageExpressMapper from 'page.js-express-mapper.js';
 import State from '../app/state'
 import 'nodent-runtime'
+import SocketUtil from '../app/util/socket'
 
 console.log("Client loading!");
+
+SocketUtil.initWithUrl(window.location.protocol + "//" + window.location.host);
 
 window.page = page;
 
@@ -52,7 +55,6 @@ import _ from 'underscore'
 
 
 
-socketUtil.initWithUrl('http://localhost:3000');
 
 
 let rendered = false;

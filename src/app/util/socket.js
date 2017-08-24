@@ -1,52 +1,31 @@
 // Socket Util
-// Users primus.js
-
-/*
-import PrimusNode from 'primus';
-import PrimusEmitter from 'primus-emitter'; */
-
 class SocketUtil {
     constructor() {
 
     }
     initWithUrl(url) {
+        console.log("Init feathers socket client", url);
         this.url = url;
-        this.client = null;
-        /*
+        this.socket = io(url);
 
-        if (typeof window != 'undefined') {
-            // Client init
-            console.log("Socket util - Client init with URL: ", url);
-            this.client = Primus.connect('http://localhost:3000');
-        } else {
-            // Server init
-            console.log("Socket util - Server init with URL: ", url);
-            let Socket = PrimusNode.createSocket({
-                transformer: 'websockets',
-                parser: 'json',
-                plugin: {
-                    'emitter' : PrimusEmitter
-                }
-            });
-            this.client = new Socket(url);
-        }
-        this.client.on('open', () => {
+        this.socket.on('connect', () => {
             console.log("Socket connection is open");
         });
-        this.client.on('error', (error) => {
+        this.socket.on('error', (error) => {
             console.log('Error connecting to socket', error);
-        }); */
+        }); 
     }
-/*
+
     reconnect() {
+        /*
         console.log("Socket Util - Reconnecting socket");
-        this.initWithUrl(this.url);
+        this.initWithUrl(this.url);*/
     }
 
     rpc(service, args) {
         return new Promise((resolve, reject) => {
             console.log("Socket util sending ",args," to ", service);
-            this.client.send(service,args, function(error, result) {
+            this.socket.emit(service,args, function(error, result) {
                 if (error) { 
                     reject(error)
                 } else {
@@ -54,11 +33,9 @@ class SocketUtil {
                 }
             });
         });
-    }*/
+    }
 };
 
 // Singleton
 let instance = new SocketUtil();
 export default instance;
-
-

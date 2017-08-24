@@ -13,8 +13,17 @@ export default class FruitStore extends Store {
         this.currentFruit = null;
         this.data = {};
     }     
-    test() {
-        console.log("Fruit store test");
+    async taste(type) {
+        console.log("Tasting " + type);
+        try {
+            let result = await socketUtil.rpc('taste::find', type);
+            console.log("Taste result", result);
+            this.trigger('taste_result', {'type': type, 'result': result.result});
+        }
+        catch (error) {
+            console.log("Taste fruit error ", error);
+            this.trigger('taste_error', {message: error});
+        }
     }
     async setFruit(fruit) { 
         try {

@@ -1,5 +1,6 @@
 'use strict'
-import fetchUtil from '../util/fetch';
+//import fetchUtil from '../util/fetch';
+import SocketUtil from '../util/socket';
 import Store from './store';
 
 export default class AuthStore extends Store {
@@ -13,7 +14,8 @@ export default class AuthStore extends Store {
         try {
             loginData.strategy = "local";
             console.log("User login: ", loginData);
-            let response = await fetchUtil.postJSON("http://localhost:3000/authentication", loginData);
+            //let response = await fetchUtil.postJSON("http://localhost:3000/authentication", loginData);
+            let response = await SocketUtil.rpc("authenticate", loginData);
             console.log("Login reply: ", response);
             if (response.errors) {
                 this.trigger("login_error", response.message);

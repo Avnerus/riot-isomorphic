@@ -1,5 +1,6 @@
 import feathers from 'feathers';
 import rest from 'feathers-rest';
+import socketio from 'feathers-socketio'
 import Routes from '../app/routes';
 
 import { render,mixin } from 'riot';
@@ -32,6 +33,7 @@ const app = feathers()
 .set('views', process.env.APP_BASE_PATH + "/src/server/views")
 .set('view engine', 'ejs')
 .configure(rest())
+.configure(socketio({wsEngine: 'uws'}))
 .configure(hooks())
 .use(compress())
 .options('*', cors())

@@ -17,6 +17,7 @@ var buble = require( 'rollup-plugin-buble');
 var riot = require('rollup-plugin-riot');
 var inject = require('rollup-plugin-inject');
 var nodent = require('rollup-plugin-nodent');
+var builtins = require('rollup-plugin-node-builtins');
 var nodemon = require('gulp-nodemon');
 
 var server;
@@ -73,6 +74,7 @@ gulp.task('rollup', function() {
       riot(),
       nodent({runtime: true}),
       buble(),
+      builtins(),
       commonjs(),
       nodeResolve({
         jsnext: true,
