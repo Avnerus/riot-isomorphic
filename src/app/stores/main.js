@@ -9,7 +9,6 @@ export default class MainStore extends Store {
 
     mall() {
         if (this.view != 'mall') {
-
             this.view = 'mall';
             this.trigger("main_state_updated", "mall");
         }

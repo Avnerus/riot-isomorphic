@@ -6,14 +6,14 @@
              <div>{name}</div>
          </li>
      </ul>
-     <div show='{ data }'>
+     <div show='{ this.state.fruit.data }'>
          <button onclick={taste} type="button">Try one</button> 
      </div>
-     <div if='{ tasteResult }'>
-         <p> Tried a {tasteResult.type} and it was {tasteResult.result} </p>
+     <div if='{ tasteResultMessage }'>
+         <p> Tried a {tasteResultMessage.type} and it was {tasteResultMessage.result} </p>
      </div>
-     <div if='{ tasteError }'>
-        <p>{tasteError}</p>
+     <div if='{ tasteErrorMessage }'>
+        <p>{tasteErrorMessage}</p>
      </div>
  </div>
  
@@ -29,32 +29,46 @@
     console.log("Init Apple tag");
 
     this.on('mount', () => {
-        this.data = null;
+        console.log("Apple mount");
+        this.tasteErrorMessage = null;
+        this.tasteResultMessage = null;
+
+        this.state.fruit.on('taste_result', this.tasteResult);
+        this.state.fruit.on('taste_error',  this.tasteError);
+        this.state.fruit.on("fruit_data_updated", this.dataUpdated);
+
     })
 
-    this.state.fruit.on("fruit_data_updated", () => {
-        this.data = this.state.fruit.data;
-        this.tasteError = null;
-        this.tasteResult = null;
-        this.update();
-    });
+    this.on('unmount', () => {
+        console.log("Apple unmount");
+        this.state.fruit.off('taste_result', this.tasteResult);
+        this.state.fruit.off('taste_error', this.tasteError);
+        this.state.fruit.off('fruit_data_updated', this.dataUpdated);
+    })
 
-    this.taste = () => {
-        let typeToTry = this.data.types[Math.floor((Math.random() * this.data.types.length))]; 
+
+    dataUpdated () {
+        console.log("Apple data update!");
+        this.update();
+    }
+
+    taste () {
+        let typeToTry = this.state.fruit.data.types[Math.floor((Math.random() * this.state.fruit.data.types.length))]; 
         console.log("Trying ", typeToTry);
         this.state.fruit.taste(typeToTry);
     }
 
-    this.state.fruit.on('taste_result', (data) => {
-      console.log("Taste result!", data);  
-      this.tasteResult = data;
+    tasteResult (data) {
+      console.log("Apple taste result!", data);  
+      this.tasteResultMessage = data;
       this.update();
-    });
+    }
 
-    this.state.fruit.on('taste_error', (error) => {
-      console.log("Taste error!", error.message);  
-      this.tasteError = error.message;
+    tasteError(error) {
+      console.log("Taste error!", error);  
+      this.tasteErrorMessage = error.message;
       this.update();
-    });
+    }
+
  </script>
 </apple>

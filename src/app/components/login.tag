@@ -52,6 +52,16 @@
 
     </style>
     <script>
+    this.on('mount', () => {
+        this.state.auth.on("login_error", this.loginError);
+        this.state.auth.on("login_success", this.loginSuccess);
+    })
+
+    this.on('unmount', () => {
+        this.state.auth.off("login_error", this.loginError);
+        this.state.auth.off("login_success", this.loginSuccess);
+    })
+
     login (e) {
         e.preventDefault();
         console.log("Logging in with: ", this.refs.email.value, "/", this.refs.password.value);
@@ -61,15 +71,15 @@
         });
     }
 
-    this.state.auth.on("login_error", (message) => {
+    loginError(message) {
         console.log("Received login error message: ", message);        
         this.errorMessage = message;
         this.update();
-    });
+    }
 
-    this.state.auth.on("login_success", () => {
+    loginSuccess() {
         console.log("Logged in");        
         this.state.main.mall();
-    });
+    }
     </script>
 </login>

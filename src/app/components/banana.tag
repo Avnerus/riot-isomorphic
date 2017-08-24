@@ -16,9 +16,18 @@
      }
  </style>
  <script>
-    this.state.fruit.on("fruit_data_updated", () => {
-         this.update();
+    this.on('mount', () => {
+        this.state.fruit.on("fruit_data_updated", this.dataUpdated);
     });
+
+    this.on('unmount', () => {
+        this.state.fruit.off('fruit_data_updated', this.dataUpdated);
+    });
+
+    dataUpdated () {
+         this.update();
+    }
+
  </script>
 </banana>
 

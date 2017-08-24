@@ -17,9 +17,16 @@
      }
  </style>
  <script>
-    this.state.auth.on("login_success", (user) => {
-        this.update();
+    this.on('mount', () => {
+        this.state.auth.on("login_success", this.loginSucess);
     });
+    this.on('unmount', () => {
+        this.state.auth.off("login_success", this.loginSucess);
+    })
+
+    loginSucess() {
+        this.update();
+    }
 </script>
  </account-status>
 

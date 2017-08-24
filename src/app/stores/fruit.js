@@ -3,6 +3,7 @@
 
 import Store from './store';
 import FetchUtil from '../util/fetch'
+import SocketUtil from '../util/socket'
 
 export default class FruitStore extends Store {
 
@@ -16,19 +17,23 @@ export default class FruitStore extends Store {
     async taste(type) {
         console.log("Tasting " + type);
         try {
-            let result = await socketUtil.rpc('taste::find', type);
+            let result = await SocketUtil.rpc('taste::find', {fruitName: type});
             console.log("Taste result", result);
             this.trigger('taste_result', {'type': type, 'result': result.result});
         }
         catch (error) {
             console.log("Taste fruit error ", error);
-            this.trigger('taste_error', {message: error});
+            this.trigger('taste_error', error);
         }
+    }
+    clearFruit() {
+        this.currentFruit = null;
+        this.trigger("fruit_updated", null);
     }
     async setFruit(fruit) { 
         try {
             if (this.currentFruit != fruit) {
-                console.log("Setting fruit", fruit);
+                console.log("Current fruit is", this.currentFruit, "Setting fruit", fruit);
                 this.currentFruit = fruit;
                 this.trigger("fruit_updated", fruit);
 

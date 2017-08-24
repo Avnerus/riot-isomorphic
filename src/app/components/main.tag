@@ -20,10 +20,17 @@
             console.log("Main mounted");
             console.log("Current view ", this.state.main.view);
             mount(this.refs.view, this.state.main.view);
+
+            this.state.main.on('main_state_updated', this.viewUpdated);
         });
-        this.state.main.on('main_state_updated', (view) => {
+
+        this.on('unmount', () => {
+            this.state.main.off('main_state_updated', this.viewUpdated);
+        })
+
+        viewUpdated(view) {
             console.log("Main state update!", view);
             mount(this.refs.view, view);
-        });
+        }
     </script>
 </main>

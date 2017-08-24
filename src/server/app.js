@@ -93,7 +93,7 @@ Promise.all([
 // Client routes
 app.use(function (req, res, next) {
     console.log("Init state");
-    req.state = new State();
+    req.appState = new State();
     req.populateQueue = [];
     next();
 });
@@ -107,10 +107,10 @@ app.use(function (req, res, next) {
         Promise.all(req.populateQueue)
         .then(() => {
             console.log("Render riot");
-            mixin({state: req.state}); // Global state mixin
+            mixin({state: req.appState}); // Global state mixin
             res.render('index', {
-              initialData: JSON.stringify(req.state),
-              body: render('main', req.state)
+              initialData: JSON.stringify(req.appState),
+              body: render('main', req.appState)
             })
         })
     }

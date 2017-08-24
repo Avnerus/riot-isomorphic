@@ -20,14 +20,34 @@
     import './banana.tag'
 
     this.on('mount', () => {
+        console.log("Mall mounted!");
         if (this.state.fruit.currentFruit) {
-            mount(this.refs.fruit, this.state.fruit.currentFruit);
+            console.log("Mounting fruit", this.state.fruit.currentFruit);
+            this.fruitTag = mount(this.refs.fruit, this.state.fruit.currentFruit)[0];
         }
+
+        this.state.fruit.on('fruit_updated', this.fruitUpdate);
     });
 
-    this.state.fruit.on('fruit_updated', (fruit) => {
-        console.log("Mall - fruit updated!!",fruit, this.refs);
-        mount(this.refs.fruit, fruit);
-    });
+    this.on('unmount', () => {
+        console.log("Mall unmount!");
+        this.state.fruit.off('fruit_updated', this.fruitUpdate);
+        if (this.fruitTag) {
+            this.fruitTag.unmount(true);                
+            this.fruitTag = null;
+        }
+    })
+
+    fruitUpdate (fruit) {
+        console.log("Mall - fruit updated!!",fruit);
+        if (fruit) {
+            this.fruitTag = mount(this.refs.fruit, fruit)[0];
+        } else if (this.fruitTag) {
+            console.log("Unmounting fruit tag!");
+            // Unmount the current fruit
+            this.fruitTag = null;
+        }
+    }
+
  </script>
  </mall>

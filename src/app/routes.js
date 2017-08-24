@@ -12,31 +12,34 @@ class Routes {
         }
     }
 
-    runRoutingTable(app,state) {
+    runRoutingTable(app,appState) {
         app.route('/').get((req, res, next) => {
             console.log("Default route!")
-            req.state.main.mall();
+            req.appState.main.mall();
+            req.appState.fruit.clearFruit();
             this.go(next, req);
         });
 
         app.route('/apple').get((req, res, next) => {
-            console.log("Apple route!", req.state.fruit);
+            console.log("Apple route!", req.appState.fruit);
+            req.appState.main.mall();
             req.populateQueue.push(
-                req.state.fruit.setFruit("apple")
+                req.appState.fruit.setFruit("apple")
             );
             this.go(next, req);
         });
 
         app.route('/banana').get( (req, res, next) => {
-            console.log("Banana route!", req.state.fruit);
+            console.log("Banana route!", req.appState.fruit);
+            req.appState.main.mall();
             req.populateQueue.push(
-                req.state.fruit.setFruit("banana")
+                req.appState.fruit.setFruit("banana")
             );
             this.go(next, req);
         });
 
         app.route('/login').get((req, res, next) => {
-            req.state.main.login();
+            req.appState.main.login();
             this.go(next, req);
         });
         /*
