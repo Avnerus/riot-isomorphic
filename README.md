@@ -1,19 +1,12 @@
 # Isomorphic Riot
-An attempt for an isomorphic appliction using RiotJS 2. Includes:
-+ ES6 code base using Babel transpiler and Browserify. With ES7 async/await
-(_SystemJS example available in the 'systemjs' branch_)
+An attempt for an isomorphic appliction using RiotJS 3.  and more. Includes:
++ ES6 code base using **rollup & buble** With ES7 async/await by **nodent**
++ One directional data flux, single state object - Inspired by [riot-app-example](https://github.com/GianlucaGuarini/riot-app-example/), [Redux](http://redux.js.org/)
 + Shared routing code between client and server using [Page.js](https://visionmedia.github.io/page.js/) and [Page.JS-Express-Mapper](https://github.com/kethinov/page.js-express-mapper.js).
-+ Riot rendering on the server side using riot.render() and a custom template engine.
-+ Server services powered by [Feathers.js](http://feathersjs.com/) with Realtime WebSocket communication using Primus.
-+ User authentication using [Passport.js](http://passportjs.org/)
-+ **NEW: Flux architecture with custom dispatcher/store classes, that can be instatinated per server request. Inspired by [RiotControl](https://github.com/jimsparkman/RiotControl/) and [dispatchr](https://github.com/yahoo/dispatchr/)**
-+ *waitBeforeRendering* - waits for events to occur before rendering the main tag
-+ ES6 riot tag files without using the *.tag extension.
-+ Support for Autoprefixer - Gulp tasks extract css from javascript tags, concatinate them and run postprocessing.
-+ Gulp based tasks for running the node app using [gulp-live-server].
-
-##### Note: The demo services have an intentional 1sec delay before responding, to illustrate the ```waitBeforeRendering``` feature.
-
++ Riot rendering on the server side using riot.render(). Waits for state to populate before rendering.
++ Server services powered by [Feathers.js](http://feathersjs.com/) with Realtime WebSocket communication using **Socket.IO/uWS**.
++ Local User authentication
++ Gulp tasks extract css from javascript tags, concatinate them and run postprocessing.
 
 Install
 ```
