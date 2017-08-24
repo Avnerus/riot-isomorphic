@@ -51,7 +51,6 @@
     "express-session": "^1.11.1",
     "feathers": "^2.1.7",
     "feathers-authentication": "^1.2.7",
-    "feathers-authentication-client": "^0.3.3",
     "feathers-authentication-local": "^0.4.4",
     "feathers-errors": "^2.9.1",
     "feathers-hooks": "^2.0.2",
@@ -67,8 +66,6 @@
     "passport-local": "^1.0.0",
     "reify": "^0.4.4",
     "riot": "^3.6.1",
-    "riot-route": "^3.1.2",
-    "rollup-plugin-node-builtins": "^2.1.2",
     "socket.io-client": "^2.0.3",
     "uws": "^8.14.1"
   }
